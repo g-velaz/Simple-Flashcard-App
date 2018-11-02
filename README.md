@@ -1,9 +1,34 @@
-## Quizlet-Who
+# Quizlet-Who
+
+## Lab 2
+
+### App Description
+This app allows the user to make a single new flashcard that can be used at any moment
+
+### App Walk-through
+
+<img src="YOUR_GIF_URL_HERE" width=200><br>
+
+## Required
+- [x] User can click on a ‘+’ button that takes the user to new ‘Add Card Screen’
+- [x] The 'Add Card Screen' has a cancel button to take the user back to the main screen
+- [x] User can enter and submit a Question and Answer through the 'Add Card Screen'
+- [x] User will see the card they just created on the main screen when they press the 'Save Button'
+- [x] Push your progress to GitHub!
+
+## Optional
+- [ ] User can edit a card
+- [ ] An error message is shown if the user doesn't enter both a Question and an Answer
+- [ ] A notification is shown if the card was created successfully
+- [ ] User can also enter multiple choice answers when creating a card
+- [ ] App is further styled and customized!
+
+## Lab 1
 
 ### App Description
 This app allows the user to click on the question in order to get the answer
 
-### App Walk-though
+### App Walk-through
 
 <img src="https://github.com/g-velaz/Simple-Flashcard-App/blob/master/flashcardApp_GV.gif" width=200><br>
 
@@ -14,8 +39,8 @@ This app allows the user to click on the question in order to get the answer
 - [x] Build in logic to show the answer side when the card is tapped
 - [x] Push code to GitHub
 ## Optional
-- [ ] toggle the flashcard between the question side and the answer side
-- [ ] Style the question and answer side of the card to better distinguish between the two sides
+- [x] toggle the flashcard between the question side and the answer side
+- [x] Style the question and answer side of the card to better distinguish between the two sides
 - [ ] Add selectable multiple choice answers beneath the card
    - [ ] Change the background color of the multiple choice answers when clicked to indicate whether the question was answered correctly
 - [ ] Further customize and style the card
