@@ -7,7 +7,7 @@ This app allows the user to make a single new flashcard that can be used at any 
 
 ### App Walk-through
 
-<img src="YOUR_GIF_URL_HERE" width=200><br>
+<img src="https://github.com/g-velaz/Simple-Flashcard-App/blob/master/flashcardApp_GV2.gif" width=200><br>
 
 ## Required
 - [x] User can click on a ‘+’ button that takes the user to new ‘Add Card Screen’
