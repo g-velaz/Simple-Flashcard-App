@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddCardActivity">
+
+    <ImageView
+        android:id="@+id/cancelButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="17dp"
+        android:layout_marginEnd="17dp"
+        android:background="#ffffff"
+        android:src="@drawable/cancel_button" />
+
+    <EditText
+        android:id="@+id/getQ"
+        android:layout_width="350dp"
+        android:layout_height="90dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp"
+        android:background="#d99ee1"
+        android:hint="Type your question here!"
+        android:textColorHint="#a470ab" />
+
+    <EditText
+        android:id="@+id/getAns"
+        android:layout_width="350dp"
+        android:layout_height="90dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="122dp"
+        android:background="#b2eca9"
+        android:hint="Type your answer here!"
+        android:textColorHint="#73a66b" />
+
+    <ImageView
+        android:id="@+id/saveButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/cancelButton"
+        android:layout_marginStart="17dp"
+        android:layout_marginBottom="17dp"
+        android:background="#ffffff"
+        android:src="@drawable/save_button" />
+
+</RelativeLayout>

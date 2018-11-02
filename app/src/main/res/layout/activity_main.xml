@@ -14,7 +14,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:gravity="center_vertical|center_horizontal"
+        android:background="#d99ee1"
         android:text="What is considered the powerhouse of the cell?"
+        android:textColor="@color/colorQuestion"
         android:textSize="40sp" />
 
     <TextView
@@ -23,8 +25,21 @@
         android:layout_height="200dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:background="#b2eca9"
         android:gravity="center_vertical|center_horizontal"
         android:text="The Mitochondria"
+        android:textColor="@color/colorAnswer"
         android:textSize="40sp"
         android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/addButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="17dp"
+        android:layout_marginEnd="17dp"
+        android:background="#ffffff"
+        android:src="@drawable/add_button" />
 </RelativeLayout>
