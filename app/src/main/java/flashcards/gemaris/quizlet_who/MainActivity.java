@@ -192,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
                     ((TextView) findViewById(R.id.flashcardAnswer)).setTextColor(
                             getResources().getColor(R.color.colorAnswer));
                 }
+                findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
+                findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
 
                 flashcardDatabase.insertCard(new Flashcard(strQ, strAns)); //Saves the flashcard
                 allFlashcards = flashcardDatabase.getAllCards(); //NEW ARRAY ELEMENT
