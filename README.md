@@ -3,7 +3,7 @@
 ## Lab 3
 
 ### App Description
-This app allows the user to make multiple flashcards that can be revisited in original or random order at any time
+This app allows the user to make multiple flashcards that can be revisited in original or random order at any time. The user can also delete and add cards at will.
 
 ### App Walk-though
 
