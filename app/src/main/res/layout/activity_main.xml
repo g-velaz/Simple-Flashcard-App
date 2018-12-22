@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#D4F5F5"
     tools:context=".MainActivity">
 
 
@@ -33,7 +34,7 @@
         android:layout_centerHorizontal="true"
         android:gravity="center_vertical|center_horizontal"
         android:text="Add new flashcard"
-        android:textColor="#000000"
+        android:textColor="#565656"
         android:textSize="20sp" />
 
     <TextView
@@ -44,7 +45,7 @@
         android:layout_centerHorizontal="true"
         android:gravity="center_vertical|center_horizontal"
         android:text="Remove current flashcard"
-        android:textColor="#000000"
+        android:textColor="#565656"
         android:textSize="20sp" />
 
     <TextView

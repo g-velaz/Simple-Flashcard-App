@@ -1,10 +1,14 @@
 package flashcards.gemaris.quizlet_who;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import java.util.List;
@@ -14,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
     FlashcardDatabase flashcardDatabase; //Can be used in all methods of MainActivity
     List<Flashcard> allFlashcards; //Holds a list of Flashcards
-    int currentCardDisplayedIndex = 0;
+    int currentCardDisplayedIndex = -1000; //So it does not move left and right
+    boolean isQCardVisible = true; //Checks for which side of the card is visible
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,21 +32,66 @@ public class MainActivity extends AppCompatActivity {
         if (allFlashcards != null && allFlashcards.size() > 0) {
             ((TextView) findViewById(R.id.flashcardQuestion)).setText(allFlashcards.get(0).getQuestion());
             ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(0).getAnswer());
+            currentCardDisplayedIndex = 0; //If cards exist then index must be set to beginning of stack
         }
 
         findViewById(R.id.flashcardQuestion).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                findViewById(R.id.flashcardQuestion).setVisibility(View.INVISIBLE);
-                findViewById(R.id.flashcardAnswer).setVisibility(View.VISIBLE);
+
+                isQCardVisible = false;
+
+                findViewById(R.id.flashcardQuestion).animate()
+                        .rotationY(90)
+                        .setDuration(200)
+                        .withEndAction(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        findViewById(R.id.flashcardQuestion).setVisibility(View.INVISIBLE);
+                                        findViewById(R.id.flashcardAnswer).setVisibility(View.VISIBLE);
+                                        // second quarter turn SECOND PART APPEARS
+                                        findViewById(R.id.flashcardAnswer).setRotationY(-90);
+                                        findViewById(R.id.flashcardQuestion).setCameraDistance(250000);
+                                        findViewById(R.id.flashcardAnswer).setCameraDistance(250000);
+                                        findViewById(R.id.flashcardAnswer).animate()
+                                                .rotationY(0)
+                                                .setDuration(200)
+                                                .start();
+                                    }
+                                }
+                        ).start();
             }
         }); //Note to self: place the findViewById in onCreate, not in the MainActivity class
+
+
 
         findViewById(R.id.flashcardAnswer).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
-                findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
+
+                isQCardVisible = true;
+
+                findViewById(R.id.flashcardAnswer).animate()
+                        .rotationY(90)
+                        .setDuration(200)
+                        .withEndAction(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
+                                        findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
+                                        // second quarter turn SECOND PART APPEARS
+                                        findViewById(R.id.flashcardQuestion).setRotationY(-90);
+                                        findViewById(R.id.flashcardAnswer).setCameraDistance(250000);
+                                        findViewById(R.id.flashcardQuestion).setCameraDistance(250000);
+                                        findViewById(R.id.flashcardQuestion).animate()
+                                                .rotationY(0)
+                                                .setDuration(200)
+                                                .start();
+                                    }
+                                }
+                        ).start();
             }
         });
 
@@ -55,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("nameQ", "question");
                 intent.putExtra("nameA", "answer");
                 MainActivity.this.startActivityForResult(intent, 100);
+                overridePendingTransition(R.anim.right_in, R.anim.left_out);
 
             }
 
@@ -63,58 +114,160 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.nextButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                final Animation leftOutAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.left_out);
+                final Animation rightInAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.right_in);
+
                 if(currentCardDisplayedIndex == -1000){
                     currentCardDisplayedIndex = -1000;
                 }//once everything is deleted the button is rendered unusable
                 else {
+
                     // advance our pointer index so we can show the next card
                     currentCardDisplayedIndex++;
 
-                    // make sure we don't get an IndexOutOfBoundsError if we are viewing the last indexed card in our list
-                    if (currentCardDisplayedIndex > allFlashcards.size() - 1) {
-                        currentCardDisplayedIndex = 0;
-                    }//if last card is removed go to "next" card which is at 0
-                    else if ((currentCardDisplayedIndex == 0) && (currentCardDisplayedIndex == allFlashcards.size() - 1)) {
-                        currentCardDisplayedIndex = 0;
-                    }//for singular card only
-                    // set the question and answer TextViews with data from the database
-                    ((TextView) findViewById(R.id.flashcardQuestion)).setText(allFlashcards.get(currentCardDisplayedIndex).getQuestion());
-                    ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
+                    leftOutAnim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            // this method is called when the animation first starts
+                            // make sure we don't get an IndexOutOfBoundsError if we are viewing the last indexed card in our list
+                            if (currentCardDisplayedIndex > allFlashcards.size() - 1) {
+                                currentCardDisplayedIndex = 0;
+                            }//if last card is removed go to "next" card which is at 0
+                            else if ((currentCardDisplayedIndex == 0) && (currentCardDisplayedIndex == allFlashcards.size() - 1)) {
+                                currentCardDisplayedIndex = 0;
+                            }//for singular card only
 
-                    findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
-                    findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            // this method is called when the animation is finished playing
+                            // set the question and answer TextViews with data from the database
+                            ((TextView) findViewById(R.id.flashcardQuestion)).setText(allFlashcards.get(currentCardDisplayedIndex).getQuestion());
+                            ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
+                            findViewById(R.id.flashcardQuestion).startAnimation(rightInAnim);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            // we don't need to worry about this method
+                        }
+                    });
+
+                    if(isQCardVisible == true)
+                        findViewById(R.id.flashcardQuestion).startAnimation(leftOutAnim);
+                    if(isQCardVisible == false) {
+                        findViewById(R.id.flashcardAnswer).startAnimation(leftOutAnim);
+                        isQCardVisible = true;
+                    }
+
+
+                    rightInAnim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            // this method is called when the animation first starts
+                            findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
+                            findViewById(R.id.flashcardQuestion).setRotationY(0);
+                            findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            // this method is called when the animation is finished playing
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            // we don't need to worry about this method
+                        }
+                    });
+
+
                 }
             }
         });
 
+
+
         findViewById(R.id.prevButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentCardDisplayedIndex == -1000){
-                    currentCardDisplayedIndex = -1000;
-                } //once everything is deleted the button is rendered unusable
 
-                else {
-                    // retract our pointer index so we can show the next card
-                    currentCardDisplayedIndex--;
+                    final Animation leftInAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.left_in);
+                    final Animation rightOutAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.right_out);
 
-                    // make sure we don't get an IndexOutOfBoundsError if we are viewing the last indexed card in our list
-                    if (currentCardDisplayedIndex < 0) {
-                        currentCardDisplayedIndex = (allFlashcards.size() - 1);
+                    if(currentCardDisplayedIndex == -1000){
+                        currentCardDisplayedIndex = -1000;
+                    }//once everything is deleted the button is rendered unusable
+                    else {
+
+                        // advance our pointer index so we can show the next card
+                        currentCardDisplayedIndex--;
+
+                        leftInAnim.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                                // this method is called when the animation first starts
+                                // make sure we don't get an IndexOutOfBoundsError if we are viewing the last indexed card in our list
+                                if (currentCardDisplayedIndex < 0) {
+                                    currentCardDisplayedIndex = (allFlashcards.size() - 1);
+                                }
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                // this method is called when the animation is finished playing
+                                // set the question and answer TextViews with data from the database
+                                ((TextView) findViewById(R.id.flashcardQuestion)).setText(allFlashcards.get(currentCardDisplayedIndex).getQuestion());
+                                ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
+                                findViewById(R.id.flashcardQuestion).startAnimation(rightOutAnim);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                                // we don't need to worry about this method
+                            }
+                        });
+
+                        if(isQCardVisible == true)
+                            findViewById(R.id.flashcardQuestion).startAnimation(leftInAnim);
+                        if(isQCardVisible == false) {
+                            findViewById(R.id.flashcardAnswer).startAnimation(leftInAnim);
+                            isQCardVisible = true; //once the next card rolls in this is true
+                        }
+
+
+                        rightOutAnim.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                                // this method is called when the animation first starts
+                                findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
+                                findViewById(R.id.flashcardQuestion).setRotationY(0);
+                                findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                // this method is called when the animation is finished playing
+
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                                // we don't need to worry about this method
+                            }
+                        });
+
                     }
-
-                    // set the question and answer TextViews with data from the database
-                    ((TextView) findViewById(R.id.flashcardQuestion)).setText(allFlashcards.get(currentCardDisplayedIndex).getQuestion());
-                    ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
-
-                    findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
-                    findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
-                }
             }
         });
         findViewById(R.id.randomButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isQCardVisible = true;
                 if(currentCardDisplayedIndex == -1000){
                     currentCardDisplayedIndex = -1000;
                 }//once everything is deleted the button is rendered unusable
@@ -127,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
                     ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
 
                     findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
+                    findViewById(R.id.flashcardQuestion).setRotationY(0);
                     findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
                 }
             }
@@ -135,27 +289,88 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.removeButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if((currentCardDisplayedIndex == 0)&&(currentCardDisplayedIndex == allFlashcards.size() - 1)){
-                    currentCardDisplayedIndex = -1000;
-                }//for last card to be deleted
 
-                flashcardDatabase.deleteCard(((TextView) findViewById(R.id.flashcardQuestion)).getText().toString());
-                allFlashcards = flashcardDatabase.getAllCards(); //ONE LESS ARRAY ELEMENT
-                if (currentCardDisplayedIndex < 0) {
-                    ((TextView) findViewById(R.id.flashcardQuestion)).setText("You have no more flashcards.");
-                    ((TextView) findViewById(R.id.flashcardAnswer)).setText("Press the + button to begin adding flashcards.");
-                }
-                else {
-                    if (currentCardDisplayedIndex > allFlashcards.size() - 1) {
-                        currentCardDisplayedIndex = 0;
-                    }
-                    ((TextView) findViewById(R.id.flashcardQuestion)).setText(allFlashcards.get(currentCardDisplayedIndex).getQuestion());
-                    ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
+                final Animation UpAndOutAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.up_n_out);
+                final Animation rightInAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.right_in);
 
+
+              /*
                     findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
-                    findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.flashcardQuestion).setRotationY(0);
+                    findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);*/
+
+
+                    UpAndOutAnim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            // this method is called when the animation first starts
+                            if((currentCardDisplayedIndex == 0)&&(currentCardDisplayedIndex == allFlashcards.size() - 1)){
+                                currentCardDisplayedIndex = -1000;
+                            }//for last card to be deleted
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            // this method is called when the animation is finished playing
+                            // set the question and answer TextViews with data from the database
+                            flashcardDatabase.deleteCard(((TextView) findViewById(R.id.flashcardQuestion)).getText().toString());
+                            allFlashcards = flashcardDatabase.getAllCards(); //ONE LESS ARRAY ELEMENT
+
+                            if (currentCardDisplayedIndex < 0) {
+                                ((TextView) findViewById(R.id.flashcardQuestion)).setText("You have no more flashcards.");
+                                ((TextView) findViewById(R.id.flashcardAnswer)).setText("Press the + button to begin adding flashcards.");
+                            }
+                            else {
+
+                                if (currentCardDisplayedIndex > allFlashcards.size() - 1) {
+                                    currentCardDisplayedIndex = 0;
+                                }
+                                ((TextView) findViewById(R.id.flashcardQuestion)).setText(allFlashcards.get(currentCardDisplayedIndex).getQuestion());
+                                ((TextView) findViewById(R.id.flashcardAnswer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
+                            }
+                            findViewById(R.id.flashcardQuestion).startAnimation(rightInAnim);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            // we don't need to worry about this method
+                        }
+                    });
+
+
+                    if(isQCardVisible == true)
+                        findViewById(R.id.flashcardQuestion).startAnimation(UpAndOutAnim);
+                    if(isQCardVisible == false) {
+                        findViewById(R.id.flashcardAnswer).startAnimation(UpAndOutAnim);
+                        isQCardVisible = true; //once the next card rolls in this is true
+                    }
+
+
+                    rightInAnim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            // this method is called when the animation first starts
+                            findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
+                            findViewById(R.id.flashcardQuestion).setRotationY(0);
+                            findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            // this method is called when the animation is finished playing
+
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            // we don't need to worry about this method
+                        }
+                    });
+
+
                 }
-            }
+
         });
 
     }
@@ -172,27 +387,20 @@ public class MainActivity extends AppCompatActivity {
                 //Is the string empty for the question?
                 if (TextUtils.isEmpty(strQ)){//This is for having an empty string and clicking save
                     ((TextView) findViewById(R.id.flashcardQuestion)).setText("Insert a question here"); //If blank and saved then error
-                    ((TextView) findViewById(R.id.flashcardQuestion)).setTextColor( //Changes the color to distinguish the two
-                            getResources().getColor(R.color.blankResponse));
                 }
                 else {
                     ((TextView) findViewById(R.id.flashcardQuestion)).setText(strQ);
-                    ((TextView) findViewById(R.id.flashcardQuestion)).setTextColor(
-                            getResources().getColor(R.color.colorQuestion)); //Maintains the old color
 
                 }
                 //Is the string empty for the answer?
                 if (TextUtils.isEmpty(strAns)){
                     ((TextView) findViewById(R.id.flashcardAnswer)).setText("Insert an answer here");
-                    ((TextView) findViewById(R.id.flashcardAnswer)).setTextColor(
-                            getResources().getColor(R.color.blankResponse));
                 }
                 else {
                     ((TextView) findViewById(R.id.flashcardAnswer)).setText(strAns);
-                    ((TextView) findViewById(R.id.flashcardAnswer)).setTextColor(
-                            getResources().getColor(R.color.colorAnswer));
                 }
                 findViewById(R.id.flashcardQuestion).setVisibility(View.VISIBLE);
+                findViewById(R.id.flashcardQuestion).setRotationY(0);
                 findViewById(R.id.flashcardAnswer).setVisibility(View.INVISIBLE);
 
                 flashcardDatabase.insertCard(new Flashcard(strQ, strAns)); //Saves the flashcard
